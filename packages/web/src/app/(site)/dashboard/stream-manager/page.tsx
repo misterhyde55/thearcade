@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Bookmark, Megaphone, ShieldAlert, Swords, X } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Avatar } from "@/components/ui/Avatar";
+import { CabinetFrame } from "@/components/player/CabinetFrame";
 import { useToast } from "@/components/ui/Toast";
 import { useDemoSession } from "@/lib/demo-session";
 import { formatUptime } from "@/lib/format";
@@ -48,17 +49,20 @@ export default function StreamManagerPage() {
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr]">
         <div className="rounded-lg border border-surface-border bg-surface-panel p-4">
-          <div
-            className="relative flex aspect-video items-center justify-center rounded-md"
-            style={{ background: `linear-gradient(135deg, ${creator.bannerAccent[0]}30, ${creator.bannerAccent[1]}20)` }}
-          >
-            <Avatar color={creator.avatarColor} initials={creator.avatarInitials} size={48} />
-            {stream?.status === "live" && (
-              <span className="absolute left-2 top-2 flex items-center gap-1 rounded bg-brand-red px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
-                <span className="h-1.5 w-1.5 animate-pulse-live rounded-full bg-white" /> Live
-              </span>
-            )}
-          </div>
+          <CabinetFrame>
+            <div
+              className="screen-vignette relative flex aspect-video items-center justify-center overflow-hidden rounded-md border border-black/60"
+              style={{ background: `linear-gradient(135deg, ${creator.bannerAccent[0]}30, ${creator.bannerAccent[1]}20)` }}
+            >
+              <Avatar color={creator.avatarColor} initials={creator.avatarInitials} size={48} />
+              {stream?.status === "live" && (
+                <span className="absolute left-2 top-2 flex items-center gap-1 rounded bg-brand-red px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
+                  <span className="h-1.5 w-1.5 animate-pulse-live rounded-full bg-white" /> Live
+                </span>
+              )}
+              <div className="screen-scanlines pointer-events-none absolute inset-0" aria-hidden />
+            </div>
+          </CabinetFrame>
           <p className="mt-2 text-xs text-ink-faint">
             {stream?.status === "live" ? `Live · uptime ${formatUptime(stream.startedAt)}` : "Not currently broadcasting"}
           </p>

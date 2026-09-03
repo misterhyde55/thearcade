@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Eye, Volume2, VolumeX } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Pill } from "@/components/ui/Badge";
+import { CabinetFrame } from "@/components/player/CabinetFrame";
 import { FollowButton } from "@/components/stream/FollowButton";
 import { formatCount, formatUptime } from "@/lib/format";
 import { getCreatorById } from "@/lib/mock-data";
@@ -17,39 +18,42 @@ export function FeaturedStream({ stream }: { stream: Stream }) {
 
   return (
     <section aria-label="Featured live broadcast" className="overflow-hidden rounded-xl border border-surface-border bg-surface-panel">
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px]">
-        <Link
-          href={`/watch/${stream.id}`}
-          className="focus-ring group relative block aspect-video overflow-hidden"
-          style={{ background: `linear-gradient(135deg, ${stream.thumbnailAccent[0]}40, ${stream.thumbnailAccent[1]}25)` }}
-        >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(255,255,255,0.08),transparent_55%)]" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Avatar color={creator.avatarColor} initials={creator.avatarInitials} size={88} />
-          </div>
-          <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded bg-brand-red px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
-            <span className="h-1.5 w-1.5 animate-pulse-live rounded-full bg-white" /> Live
-          </span>
-          <span className="absolute right-3 top-3 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs font-medium text-ink">
-            <Eye size={13} /> {formatCount(stream.viewerCount)} watching
-          </span>
-          <span className="absolute bottom-3 left-3 rounded bg-black/70 px-2 py-1 text-xs text-ink-muted">
-            Simulated preview · uptime {formatUptime(stream.startedAt)}
-          </span>
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              setMuted((v) => !v);
-            }}
-            aria-pressed={!muted}
-            aria-label={muted ? "Unmute preview" : "Mute preview"}
-            className="focus-ring absolute bottom-3 right-3 rounded-full bg-black/70 p-2 text-ink hover:bg-black/85"
+      <div className="grid grid-cols-1 gap-0 p-3 lg:grid-cols-[1fr_320px] lg:gap-4 lg:p-4">
+        <CabinetFrame>
+          <Link
+            href={`/watch/${stream.id}`}
+            className="focus-ring screen-vignette group relative block aspect-video overflow-hidden rounded-lg border border-black/60"
+            style={{ background: `linear-gradient(135deg, ${stream.thumbnailAccent[0]}40, ${stream.thumbnailAccent[1]}25)` }}
           >
-            {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          </button>
-        </Link>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(255,255,255,0.08),transparent_55%)]" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <Avatar color={creator.avatarColor} initials={creator.avatarInitials} size={88} />
+            </div>
+            <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded bg-brand-red px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+              <span className="h-1.5 w-1.5 animate-pulse-live rounded-full bg-white" /> Live
+            </span>
+            <span className="absolute right-3 top-3 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs font-medium text-ink">
+              <Eye size={13} /> {formatCount(stream.viewerCount)} watching
+            </span>
+            <span className="absolute bottom-3 left-3 rounded bg-black/70 px-2 py-1 text-xs text-ink-muted">
+              Simulated preview · uptime {formatUptime(stream.startedAt)}
+            </span>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                setMuted((v) => !v);
+              }}
+              aria-pressed={!muted}
+              aria-label={muted ? "Unmute preview" : "Mute preview"}
+              className="focus-ring absolute bottom-3 right-3 rounded-full bg-black/70 p-2 text-ink hover:bg-black/85"
+            >
+              {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+            </button>
+            <div className="screen-scanlines pointer-events-none absolute inset-0" aria-hidden />
+          </Link>
+        </CabinetFrame>
 
-        <div className="flex flex-col justify-between gap-4 p-5">
+        <div className="flex flex-col justify-between gap-4 p-2 lg:p-1">
           <div>
             <div className="flex items-center gap-2">
               <Avatar color={creator.avatarColor} initials={creator.avatarInitials} size={36} />

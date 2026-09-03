@@ -12,6 +12,7 @@ import {
   Tv2
 } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
+import { CabinetFrame } from "./CabinetFrame";
 import { PlayerControls } from "./PlayerControls";
 import { formatScheduleTime, formatUptime } from "@/lib/format";
 import { useDemoSession } from "@/lib/demo-session";
@@ -85,11 +86,12 @@ export function VideoPlayer({
   const gradient = `linear-gradient(135deg, ${stream.thumbnailAccent[0]}30, ${stream.thumbnailAccent[1]}20)`;
 
   return (
-    <div
-      ref={containerRef}
-      className="relative aspect-video w-full overflow-hidden rounded-lg border border-surface-border bg-black"
-      style={{ background: `#050507` }}
-    >
+    <CabinetFrame>
+      <div
+        ref={containerRef}
+        className="screen-vignette relative aspect-video w-full overflow-hidden rounded-lg border border-black/60 bg-black"
+        style={{ background: `#050507` }}
+      >
       {loading && <LoadingState />}
 
       {!loading && connectionFailed && <ConnectionFailedState onRetry={retryConnection} />}
@@ -152,7 +154,10 @@ export function VideoPlayer({
           )}
         </>
       )}
-    </div>
+
+      <div className="screen-scanlines pointer-events-none absolute inset-0" aria-hidden />
+      </div>
+    </CabinetFrame>
   );
 }
 
