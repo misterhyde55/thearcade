@@ -6,56 +6,57 @@
   color-scheme: dark;
 }
 
+html {
+  -webkit-font-smoothing: antialiased;
+}
+
 body {
-  background: radial-gradient(ellipse at top, #1d0e33 0%, #0a0014 60%);
-  color: #f2eaff;
+  background: #0b0b0f;
+  color: #f4f4f6;
 }
 
-.crt-overlay {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.15) 0px,
-    rgba(0, 0, 0, 0.15) 1px,
-    transparent 1px,
-    transparent 3px
-  );
-  mix-blend-mode: overlay;
+* {
+  scrollbar-color: #3a3a47 #131318;
 }
 
-.crt-vignette {
-  pointer-events: none;
-  position: fixed;
-  inset: 0;
-  z-index: 49;
-  box-shadow: inset 0 0 12vw rgba(0, 0, 0, 0.75);
-}
-
-.text-neon-cyan {
-  color: #00f6ff;
-  text-shadow: 0 0 6px #00f6ff, 0 0 16px #00f6ff88;
-}
-
-.text-neon-magenta {
-  color: #ff2bd6;
-  text-shadow: 0 0 6px #ff2bd6, 0 0 16px #ff2bd688;
-}
-
-.text-neon-yellow {
-  color: #ffe400;
-  text-shadow: 0 0 6px #ffe400, 0 0 16px #ffe40088;
-}
-
-.arcade-scrollbar::-webkit-scrollbar {
+::-webkit-scrollbar {
   width: 10px;
+  height: 10px;
 }
-.arcade-scrollbar::-webkit-scrollbar-track {
-  background: #150a26;
+::-webkit-scrollbar-track {
+  background: #131318;
 }
-.arcade-scrollbar::-webkit-scrollbar-thumb {
-  background: #3d1f66;
-  border: 2px solid #150a26;
+::-webkit-scrollbar-thumb {
+  background: #3a3a47;
+  border-radius: 999px;
+}
+
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid #e0339c;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.arcade-grid-bg {
+  background-image: repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.035) 0px, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 40px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0px, rgba(255, 255, 255, 0.035) 1px, transparent 1px, transparent 40px);
+  background-position: center top;
+  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+}
+
+.text-gradient-brand {
+  background: linear-gradient(90deg, #ff3b4e 0%, #e0339c 45%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

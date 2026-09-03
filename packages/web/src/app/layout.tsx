@@ -1,36 +1,25 @@
 import type { Metadata } from "next";
-import { Press_Start_2P, VT323 } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-import { AuthProvider } from "@/lib/auth-context";
-import { CrtOverlay } from "@/components/CrtOverlay";
-import { Navbar } from "@/components/Navbar";
+import { DemoSessionProvider } from "@/lib/demo-session";
+import { ToastProvider } from "@/components/ui/Toast";
 
-const pixelFont = Press_Start_2P({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-pixel"
-});
-
-const monoFont = VT323({
-  weight: "400",
-  subsets: ["latin"],
-  variable: "--font-mono"
-});
+const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
+const display = Space_Grotesk({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-display" });
 
 export const metadata: Metadata = {
-  title: "The Arcade — Live Retro Streaming",
-  description: "Stream live games with a retro arcade vibe. Low-latency, ad-free, XP-powered chat."
+  title: "The Arcade — Live Streaming Built for Creators",
+  description:
+    "Broadcast, chat, and grow with a streaming platform designed around transparent moderation, fair discovery, and a creator-first revenue split."
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${pixelFont.variable} ${monoFont.variable}`}>
-      <body className="min-h-screen bg-arcade-bg font-mono">
-        <AuthProvider>
-          <CrtOverlay />
-          <Navbar />
-          <main className="mx-auto max-w-7xl px-4 py-6">{children}</main>
-        </AuthProvider>
+    <html lang="en" className={`${sans.variable} ${display.variable}`}>
+      <body className="min-h-screen bg-surface font-sans text-ink antialiased">
+        <ToastProvider>
+          <DemoSessionProvider>{children}</DemoSessionProvider>
+        </ToastProvider>
       </body>
     </html>
   );
