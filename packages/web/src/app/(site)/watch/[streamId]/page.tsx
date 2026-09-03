@@ -144,7 +144,7 @@ export default function WatchPage() {
           )}
         </div>
 
-        <div className="h-[520px] lg:h-[calc(100vh-9rem)] lg:sticky lg:top-20">
+        <div className="h-[520px] lg:h-[calc(100vh-10rem)] lg:sticky lg:top-24">
           <ChatPanel channelUsername={creator.username} viewerCount={stream.viewerCount} />
         </div>
       </div>
