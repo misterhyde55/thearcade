@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Eye } from "lucide-react";
+import { Users } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Pill } from "@/components/ui/Badge";
 import { formatCount } from "@/lib/format";
@@ -22,7 +22,7 @@ export function StreamCard({ stream }: { stream: Stream }) {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.06),transparent_60%)]" />
         <Avatar color={creator.avatarColor} initials={creator.avatarInitials} size={52} />
         {stream.status === "live" && (
-          <span className="absolute left-2 top-2 flex items-center gap-1 rounded bg-brand-red px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+          <span className="cabinet-light absolute left-2 top-2 flex items-center gap-1 rounded bg-brand-red px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
             <span className="h-1.5 w-1.5 animate-pulse-live rounded-full bg-white" /> Live
           </span>
         )}
@@ -43,7 +43,7 @@ export function StreamCard({ stream }: { stream: Stream }) {
         )}
         {stream.status === "live" && (
           <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded bg-black/70 px-1.5 py-0.5 text-[11px] font-medium text-ink">
-            <Eye size={11} /> {formatCount(stream.viewerCount)}
+            <Users size={11} /> {formatCount(stream.viewerCount)} players
           </span>
         )}
       </div>

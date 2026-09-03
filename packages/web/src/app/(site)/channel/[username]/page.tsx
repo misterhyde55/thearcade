@@ -10,6 +10,7 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Pill } from "@/components/ui/Badge";
 import { FollowButton } from "@/components/stream/FollowButton";
 import { SubscribeModal } from "@/components/monetization/SubscribeModal";
+import { SectionKicker } from "@/components/ui/SectionKicker";
 import { useDemoSession } from "@/lib/demo-session";
 import { formatCount, formatCurrency, formatDuration, formatRelativeTime, formatScheduleTime } from "@/lib/format";
 import { getClipsByCreatorId, getCreatorByUsername, getStreamByCreatorId, getVodsByCreatorId } from "@/lib/mock-data";
@@ -49,12 +50,13 @@ export default function ChannelPage() {
           <div className="flex items-end gap-3">
             <Avatar color={creator.avatarColor} initials={creator.avatarInitials} size={88} ring />
             <div className="pb-1">
+              <SectionKicker>PLAYER PROFILE</SectionKicker>
               <div className="flex items-center gap-1.5">
                 <h1 className="text-lg font-semibold text-ink">{creator.displayName}</h1>
                 {creator.verified && <CheckCircle2 size={16} className="text-brand-cyan" aria-label="Verified creator" />}
               </div>
               <p className="text-sm text-ink-faint">
-                {formatCount(creator.followerCount)} followers · {formatCount(creator.subscriberCount)} subscribers
+                {formatCount(creator.followerCount)} favorites · {formatCount(creator.subscriberCount)} subscribers
               </p>
             </div>
           </div>
@@ -63,7 +65,9 @@ export default function ChannelPage() {
             <button
               onClick={() => setSubscribeOpen(true)}
               className={`focus-ring rounded-md px-3.5 py-2 text-sm font-semibold ${
-                subscribed ? "border border-brand-purple/40 bg-brand-purple/10 text-brand-purple" : "bg-brand-purple text-white hover:bg-brand-purple/90"
+                subscribed
+                  ? "border border-brand-purple/40 bg-brand-purple/10 text-brand-purple"
+                  : "arcade-button bg-brand-purple text-white hover:bg-brand-purple/90"
               }`}
             >
               {subscribed ? "Subscribed" : "Subscribe"}

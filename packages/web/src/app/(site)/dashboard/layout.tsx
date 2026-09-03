@@ -15,6 +15,7 @@ import {
 import { useDemoSession } from "@/lib/demo-session";
 import { useToast } from "@/components/ui/Toast";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SectionKicker } from "@/components/ui/SectionKicker";
 
 const NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
@@ -59,8 +60,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <SectionKicker>OPERATOR CONSOLE</SectionKicker>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_1fr]">
-        <nav aria-label="Dashboard sections" className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+        <nav
+          aria-label="Dashboard sections"
+          className="flex gap-1 overflow-x-auto rounded-lg border border-surface-border bg-surface-raised p-1.5 lg:flex-col lg:overflow-visible"
+        >
           {NAV.map((item) => {
             const active = item.exact ? pathname === item.href : pathname.startsWith(item.href);
             return (
@@ -68,11 +73,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`focus-ring flex shrink-0 items-center gap-2.5 rounded-md px-3 py-2.5 text-sm font-medium ${
-                  active ? "bg-surface-panel2 text-ink" : "text-ink-muted hover:bg-surface-panel2 hover:text-ink"
+                className={`focus-ring flex shrink-0 items-center gap-2.5 rounded-md border px-3 py-2.5 text-sm font-medium transition ${
+                  active
+                    ? "border-brand-red/40 bg-brand-red/10 text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+                    : "border-transparent text-ink-muted hover:bg-surface-panel2 hover:text-ink"
                 }`}
               >
-                <item.icon size={16} /> {item.label}
+                <item.icon size={16} className={active ? "text-brand-red" : undefined} /> {item.label}
               </Link>
             );
           })}

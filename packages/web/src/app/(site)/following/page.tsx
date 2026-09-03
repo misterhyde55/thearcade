@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Heart, LogIn } from "lucide-react";
 import { StreamCard } from "@/components/stream/StreamCard";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SectionKicker } from "@/components/ui/SectionKicker";
 import { useDemoSession } from "@/lib/demo-session";
 import { getAllChannelEntries } from "@/lib/mock-data";
 
@@ -15,7 +16,7 @@ export default function FollowingPage() {
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <EmptyState
           icon={LogIn}
-          title="Sign in to see who you follow"
+          title="Sign in to see your Player Favorites"
           description="Following creators keeps their live status, schedule, and VODs in one place."
           action={
             <Link href="/login" className="focus-ring rounded-md bg-brand-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-brand-magenta/90">
@@ -31,11 +32,12 @@ export default function FollowingPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <h1 className="mb-6 text-xl font-semibold text-ink">Following</h1>
+      <SectionKicker>YOUR ROSTER</SectionKicker>
+      <h1 className="mb-6 text-xl font-semibold text-ink">Player Favorites</h1>
       {entries.length === 0 ? (
         <EmptyState
           icon={Heart}
-          title="You're not following anyone yet"
+          title="No favorites saved yet"
           description="Follow creators from their channel page or any stream card to see them here."
           action={
             <Link href="/browse" className="focus-ring rounded-md bg-brand-magenta px-4 py-2 text-sm font-semibold text-white hover:bg-brand-magenta/90">

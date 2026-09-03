@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Eye, Volume2, VolumeX } from "lucide-react";
+import { Users, Volume2, VolumeX } from "lucide-react";
 import { Avatar } from "@/components/ui/Avatar";
 import { Pill } from "@/components/ui/Badge";
 import { CabinetFrame } from "@/components/player/CabinetFrame";
@@ -29,11 +29,11 @@ export function FeaturedStream({ stream }: { stream: Stream }) {
             <div className="absolute inset-0 flex items-center justify-center">
               <Avatar color={creator.avatarColor} initials={creator.avatarInitials} size={88} />
             </div>
-            <span className="absolute left-3 top-3 flex items-center gap-1.5 rounded bg-brand-red px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
+            <span className="cabinet-light absolute left-3 top-3 flex items-center gap-1.5 rounded bg-brand-red px-2 py-1 text-xs font-bold uppercase tracking-wide text-white">
               <span className="h-1.5 w-1.5 animate-pulse-live rounded-full bg-white" /> Live
             </span>
             <span className="absolute right-3 top-3 flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-xs font-medium text-ink">
-              <Eye size={13} /> {formatCount(stream.viewerCount)} watching
+              <Users size={13} /> {formatCount(stream.viewerCount)} players watching
             </span>
             <span className="absolute bottom-3 left-3 rounded bg-black/70 px-2 py-1 text-xs text-ink-muted">
               Simulated preview · uptime {formatUptime(stream.startedAt)}
@@ -74,7 +74,7 @@ export function FeaturedStream({ stream }: { stream: Stream }) {
             <FollowButton username={creator.username} className="flex-1" />
             <Link
               href={`/watch/${stream.id}`}
-              className="focus-ring flex-1 rounded-md bg-brand-magenta px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-magenta/90"
+              className="arcade-button focus-ring flex-1 rounded-md bg-brand-magenta px-3 py-2 text-center text-sm font-semibold text-white hover:bg-brand-magenta/90"
             >
               Watch now
             </Link>

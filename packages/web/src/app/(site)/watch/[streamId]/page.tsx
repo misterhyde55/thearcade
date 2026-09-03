@@ -70,7 +70,7 @@ export default function WatchPage() {
                   ))}
                 </div>
                 <p className="mt-2 text-xs text-ink-faint">
-                  {formatCount(stream.viewerCount)} watching · live for {formatUptime(stream.startedAt)}
+                  {formatCount(stream.viewerCount)} players watching · live for {formatUptime(stream.startedAt)}
                 </p>
               </div>
             </div>
@@ -80,7 +80,9 @@ export default function WatchPage() {
               <button
                 onClick={() => setSubscribeOpen(true)}
                 className={`focus-ring rounded-md px-3.5 py-2 text-sm font-semibold ${
-                  subscribed ? "border border-brand-purple/40 bg-brand-purple/10 text-brand-purple" : "bg-brand-purple text-white hover:bg-brand-purple/90"
+                  subscribed
+                    ? "border border-brand-purple/40 bg-brand-purple/10 text-brand-purple"
+                    : "arcade-button bg-brand-purple text-white hover:bg-brand-purple/90"
                 }`}
               >
                 {subscribed ? "Subscribed" : "Subscribe"}

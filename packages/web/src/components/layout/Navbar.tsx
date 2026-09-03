@@ -13,7 +13,7 @@ import { ProfileMenu } from "./ProfileMenu";
 
 const NAV_LINKS = [
   { href: "/browse", label: "Browse" },
-  { href: "/following", label: "Following" }
+  { href: "/following", label: "Player Favorites" }
 ];
 
 export function Navbar() {
@@ -123,7 +123,7 @@ export function Navbar() {
             href="/browse"
             className="focus-ring rounded-md px-3 py-2 text-sm font-medium text-ink-muted hover:bg-surface-panel2 hover:text-ink"
           >
-            Live Channels
+            Now Playing
           </Link>
         </div>
 
@@ -168,7 +168,7 @@ export function Navbar() {
 
           <button
             onClick={handleGoLive}
-            className="focus-ring hidden items-center gap-1.5 rounded-md bg-brand-red px-3.5 py-2 text-sm font-semibold text-white hover:bg-brand-red/90 sm:flex"
+            className="arcade-button focus-ring hidden items-center gap-1.5 rounded-md bg-brand-red px-3.5 py-2 text-sm font-semibold text-white hover:bg-brand-red/90 sm:flex"
           >
             <Radio size={15} /> Go Live
           </button>
@@ -226,7 +226,7 @@ export function Navbar() {
               <Link href="/dashboard" onClick={(e) => { handleDashboard(e); setMobileOpen(false); }} className="focus-ring rounded-md px-2 py-2.5 text-sm font-medium text-ink-muted hover:bg-surface-panel2 hover:text-ink">
                 Creator Dashboard
               </Link>
-              <button onClick={() => { handleGoLive(); setMobileOpen(false); }} className="focus-ring flex items-center justify-center gap-1.5 rounded-md bg-brand-red px-3.5 py-2.5 text-sm font-semibold text-white">
+              <button onClick={() => { handleGoLive(); setMobileOpen(false); }} className="arcade-button focus-ring flex items-center justify-center gap-1.5 rounded-md bg-brand-red px-3.5 py-2.5 text-sm font-semibold text-white">
                 <Radio size={15} /> Go Live
               </button>
               {!isSignedIn && (
