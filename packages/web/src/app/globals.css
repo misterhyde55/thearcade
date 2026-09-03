@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background: radial-gradient(ellipse at top, #1d0e33 0%, #0a0014 60%);
+  color: #f2eaff;
+}
+
+.crt-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.15) 0px,
+    rgba(0, 0, 0, 0.15) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+}
+
+.crt-vignette {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  box-shadow: inset 0 0 12vw rgba(0, 0, 0, 0.75);
+}
+
+.text-neon-cyan {
+  color: #00f6ff;
+  text-shadow: 0 0 6px #00f6ff, 0 0 16px #00f6ff88;
+}
+
+.text-neon-magenta {
+  color: #ff2bd6;
+  text-shadow: 0 0 6px #ff2bd6, 0 0 16px #ff2bd688;
+}
+
+.text-neon-yellow {
+  color: #ffe400;
+  text-shadow: 0 0 6px #ffe400, 0 0 16px #ffe40088;
+}
+
+.arcade-scrollbar::-webkit-scrollbar {
+  width: 10px;
+}
+.arcade-scrollbar::-webkit-scrollbar-track {
+  background: #150a26;
+}
+.arcade-scrollbar::-webkit-scrollbar-thumb {
+  background: #3d1f66;
+  border: 2px solid #150a26;
+}

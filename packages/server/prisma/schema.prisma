@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  displayName  String
+  email        String   @unique
+  passwordHash String
+  bio          String   @default("")
+  avatarColor  String   @default("#39ff14")
+  streamKey    String   @unique
+  xp           Int      @default(0)
+  level        Int      @default(1)
+  createdAt    DateTime @default(now())
+
+  stream         Stream?
+  chatMessages   ChatMessage[]
+  clips          Clip[]
+  following      Follow[]      @relation("FollowerRel")
+  followers      Follow[]      @relation("FollowedRel")
+}
+
+model Category {
+  id       String   @id @default(cuid())
+  slug     String   @unique
+  name     String
+  emoji    String   @default("🕹️")
+  streams  Stream[]
+}
+
+model Stream {
+  id           String    @id @default(cuid())
+  title        String    @default("Untitled Broadcast")
+  isLive       Boolean   @default(false)
+  viewerCount  Int       @default(0)
+  peakViewers  Int       @default(0)
+  startedAt    DateTime?
+  endedAt      DateTime?
+  thumbnailSeed Int      @default(0)
+
+  user       User      @relation(fields: [userId], references: [id])
+  userId     String    @unique
+
+  category   Category? @relation(fields: [categoryId], references: [id])
+  categoryId String?
+
+  clips      Clip[]
+
+  updatedAt  DateTime  @updatedAt
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  channel   String
+  body      String
+  createdAt DateTime @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+}
+
+model Clip {
+  id        String   @id @default(cuid())
+  title     String
+  createdAt DateTime @default(now())
+
+  stream   Stream @relation(fields: [streamId], references: [id])
+  streamId String
+
+  creator   User   @relation(fields: [creatorId], references: [id])
+  creatorId String
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+
+  follower    User   @relation("FollowerRel", fields: [followerId], references: [id])
+  followerId  String
+
+  followed    User   @relation("FollowedRel", fields: [followedId], references: [id])
+  followedId  String
+
+  @@unique([followerId, followedId])
+}
