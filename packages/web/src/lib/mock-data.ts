@@ -7,19 +7,29 @@
 // with real fetch/query calls — components should not need to change.
 
 import type {
+  AdRevenueRecord,
+  AdSettings,
   AnalyticsSummary,
   BannedUserRecord,
   Category,
   ChatMessage,
   Clip,
+  CopyrightClaim,
+  CouncilProposal,
   Creator,
+  CreatorGoal,
+  DiscoveryEntry,
   DiscoveryHighlight,
+  LockdownAction,
   ModLogEntry,
   ModerationCase,
   ModeratorRecord,
   Notification,
   PayoutRecord,
+  ReportRecord,
   Stream,
+  StreamRevenueRecord,
+  SupportTicket,
   VOD,
   VipRecord
 } from "./types";
@@ -730,3 +740,248 @@ export function getStreamsByCategorySlug(slug: string): Stream[] {
   if (!category) return [];
   return STREAMS.filter((s) => s.category === category.name);
 }
+
+// ---- Discovery, beyond raw viewer count ----
+// Every section below returns creators plus the specific reason they were
+// surfaced — the homepage renders that reason directly, never a bare list.
+
+export function getNewPlayers(): DiscoveryEntry[] {
+  return [...CREATORS]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 4)
+    .map((c) => ({ creatorId: c.id, reason: "New to The Arcade", icon: "sparkles" as const }));
+}
+
+export function getHiddenGems(): DiscoveryEntry[] {
+  return [...CREATORS]
+    .filter((c) => c.isSmallCreator)
+    .sort((a, b) => b.avgRetentionPct - a.avgRetentionPct)
+    .slice(0, 4)
+    .map((c) => ({
+      creatorId: c.id,
+      reason: `${c.avgRetentionPct}% viewer retention on a small channel`,
+      icon: "compass" as const
+    }));
+}
+
+export function getGrowingCommunities(): DiscoveryEntry[] {
+  return [...CREATORS]
+    .sort((a, b) => b.growthRate30d - a.growthRate30d)
+    .slice(0, 4)
+    .map((c) => ({ creatorId: c.id, reason: `+${c.growthRate30d}% followers in 30 days`, icon: "trending-up" as const }));
+}
+
+export function getFreshlyLive(): DiscoveryEntry[] {
+  return [...STREAMS]
+    .filter((s) => s.status === "live" && s.startedAt)
+    .sort((a, b) => new Date(b.startedAt!).getTime() - new Date(a.startedAt!).getTime())
+    .slice(0, 4)
+    .map((s) => ({ creatorId: s.creatorId, reason: "Just went live", icon: "radio" as const }));
+}
+
+const AFTER_DARK_USERNAMES = ["TheNightShift", "LoFiLuna", "NovaStrikes"];
+
+export function getArcadeAfterDark(): DiscoveryEntry[] {
+  return CREATORS.filter((c) => AFTER_DARK_USERNAMES.includes(c.username)).map((c) => ({
+    creatorId: c.id,
+    reason: "Curated for late-night viewing",
+    icon: "moon" as const
+  }));
+}
+
+export function getYourFavoritesLive(followedUsernames: string[]): DiscoveryEntry[] {
+  return CREATORS.filter((c) => followedUsernames.includes(c.username) && getStreamByCreatorId(c.id)?.status === "live").map(
+    (c) => ({ creatorId: c.id, reason: "You follow this creator", icon: "heart" as const })
+  );
+}
+
+export function getBecauseYouWatched(followedUsernames: string[]): DiscoveryEntry[] {
+  if (followedUsernames.length === 0) return [];
+  const followedCategories = new Set(
+    CREATORS.filter((c) => followedUsernames.includes(c.username)).map((c) => c.category)
+  );
+  return CREATORS.filter((c) => !followedUsernames.includes(c.username) && followedCategories.has(c.category))
+    .slice(0, 4)
+    .map((c) => ({ creatorId: c.id, reason: `Because you watch ${c.category}`, icon: "repeat" as const }));
+}
+
+export function getTrySomethingNew(followedUsernames: string[]): DiscoveryEntry[] {
+  const followedCategories = new Set(
+    CREATORS.filter((c) => followedUsernames.includes(c.username)).map((c) => c.category)
+  );
+  return CREATORS.filter((c) => !followedCategories.has(c.category))
+    .slice(0, 4)
+    .map((c) => ({ creatorId: c.id, reason: `You haven't explored ${c.category} yet`, icon: "compass" as const }));
+}
+
+// ---- Protection from false reports ----
+
+export const REPORTS_AGAINST_CREATOR: ReportRecord[] = [
+  {
+    id: "rep_1",
+    reporterUsername: "guest_2291",
+    reporterReputation: "new_account",
+    targetType: "stream",
+    reason: "Spam / scam",
+    submittedAt: hoursAgo(2),
+    flaggedCoordinated: true
+  },
+  {
+    id: "rep_2",
+    reporterUsername: "guest_9903",
+    reporterReputation: "new_account",
+    targetType: "stream",
+    reason: "Spam / scam",
+    submittedAt: hoursAgo(2),
+    flaggedCoordinated: true
+  },
+  {
+    id: "rep_3",
+    reporterUsername: "guest_1187",
+    reporterReputation: "new_account",
+    targetType: "stream",
+    reason: "Spam / scam",
+    submittedAt: hoursAgo(1.9),
+    flaggedCoordinated: true
+  },
+  {
+    id: "rep_4",
+    reporterUsername: "longtime_viewer_88",
+    reporterReputation: "trusted",
+    targetType: "clip",
+    reason: "Hateful conduct",
+    submittedAt: hoursAgo(30),
+    flaggedCoordinated: false
+  }
+];
+
+// ---- Lockdown Mode ----
+
+export const LOCKDOWN_ACTIONS: LockdownAction[] = [
+  { id: "followers_only", label: "Followers-only chat", description: "Only accounts that already follow you can chat.", enabledByDefault: true },
+  { id: "verified_only", label: "Verified-account chat", description: "Restrict chat to accounts with a verified email.", enabledByDefault: false },
+  { id: "pause_raids", label: "Pause incoming raids", description: "Hold raid trains from landing on your channel.", enabledByDefault: true },
+  { id: "restrict_new", label: "Restrict new accounts", description: "Block chat from accounts created in the last 24 hours.", enabledByDefault: true },
+  { id: "slow_mode", label: "Slow mode (30s)", description: "Limit how often each viewer can send a message.", enabledByDefault: true },
+  { id: "block_links", label: "Temporarily block links", description: "Automod removes any message containing a URL.", enabledByDefault: true },
+  { id: "increase_automod", label: "Increase automod sensitivity", description: "Raise the automated filter to its strictest setting.", enabledByDefault: true },
+  { id: "alert_mods", label: "Alert all active moderators", description: "Push a notification to every online moderator now.", enabledByDefault: true },
+  { id: "preserve_evidence", label: "Preserve recent chat & mod evidence", description: "Snapshot the last 30 minutes of chat and mod actions.", enabledByDefault: true }
+];
+
+// ---- Revenue detail ----
+
+export const STREAM_REVENUE: StreamRevenueRecord[] = [
+  { streamTitle: "Season Finale Reaction Night", date: "Today", subscriptions: 340.5, tips: 128.0, giftedSubs: 89.1, ads: 62.4, total: 620.0 },
+  { streamTitle: "Retro Review: Cabinet Deep Dive", date: "3 days ago", subscriptions: 210.25, tips: 74.5, giftedSubs: 40.0, ads: 38.9, total: 363.65 },
+  { streamTitle: "Variety Gaming: Community Picks", date: "6 days ago", subscriptions: 180.0, tips: 55.0, giftedSubs: 20.0, ads: 41.2, total: 296.2 },
+  { streamTitle: "Hyde Pirates Podcast Ep. 41", date: "9 days ago", subscriptions: 150.75, tips: 39.25, giftedSubs: 15.0, ads: 22.6, total: 227.6 }
+];
+
+export const CREATOR_GOAL: CreatorGoal = {
+  id: "goal_1",
+  label: "Founding Member sub goal",
+  targetAmount: 100,
+  currentAmount: 63,
+  unit: "subscribers",
+  endsAt: daysFromNow(12, 23, 59)
+};
+
+// ---- Support Center ----
+
+export const SUPPORT_TICKETS: SupportTicket[] = [
+  {
+    id: "TCK-4821",
+    subject: "Dropped frames during last night's broadcast",
+    category: "technical",
+    status: "awaiting_support",
+    priority: "standard",
+    createdAt: hoursAgo(20),
+    updatedAt: hoursAgo(18),
+    etaHours: 24,
+    messages: [
+      { author: "creator", body: "Stream was dropping frames around the 40-minute mark, bitrate looked fine on my end.", at: hoursAgo(20) },
+      { author: "support", body: "Thanks for flagging — can you attach the OBS log from that session?", at: hoursAgo(18) }
+    ]
+  },
+  {
+    id: "TCK-4790",
+    subject: "Question about founding member pricing lock",
+    category: "monetization",
+    status: "resolved",
+    priority: "standard",
+    createdAt: hoursAgo(96),
+    updatedAt: hoursAgo(70),
+    etaHours: 48,
+    messages: [
+      { author: "creator", body: "Does the founding price lock apply if a subscriber lapses and resubs later?", at: hoursAgo(96) },
+      { author: "support", body: "No — the founding rate is tied to continuous subscription. Lapsed resubs join at current pricing.", at: hoursAgo(70) }
+    ]
+  }
+];
+
+// ---- Copyright & reaction content ----
+
+export const COPYRIGHT_CLAIMS: CopyrightClaim[] = [
+  {
+    id: "CR-2201",
+    vodTitle: "Episode 11 Reaction — the crew loses it",
+    claimedTimestamp: "01:12:40",
+    claimantName: "Licensing confirmed — see Moderation case MOD-1042",
+    status: "disputed",
+    filedAt: hoursAgo(30),
+    description: "90-second segment of licensed music audible during the VOD."
+  }
+];
+
+// ---- Creator Council ----
+
+export const COUNCIL_PROPOSALS: CouncilProposal[] = [
+  {
+    id: "prop_1",
+    title: "Add a 'Clip Highlights' row to every channel page",
+    summary: "Surface top clips above VODs on the channel Home tab so new visitors see peak moments first.",
+    status: "voting",
+    votesFor: 812,
+    votesAgainst: 96,
+    closesAt: daysFromNow(4, 12, 0),
+    decisionType: "advisory"
+  },
+  {
+    id: "prop_2",
+    title: "Lower minimum payout threshold from $50 to $25",
+    summary: "Smaller creators wait longer to see their first payout. Proposal reduces the minimum for accounts under 90 days old.",
+    status: "decided_binding",
+    votesFor: 1204,
+    votesAgainst: 143,
+    closesAt: hoursAgo(48),
+    decisionType: "binding"
+  },
+  {
+    id: "prop_3",
+    title: "Public roadmap: LL-HLS latency improvements",
+    summary: "Engineering roadmap item for sub-2-second latency. Council review is advisory input into prioritization, not a vote on shipping it.",
+    status: "advisory_review",
+    votesFor: 0,
+    votesAgainst: 0,
+    closesAt: daysFromNow(20, 0, 0),
+    decisionType: "advisory"
+  }
+];
+
+// ---- Advertising control ----
+
+export const DEFAULT_AD_SETTINGS: AdSettings = {
+  adsEnabled: true,
+  manualTriggerOnly: true,
+  maxAdsPerHour: 2,
+  subscribersSeeAds: false,
+  blockDuringKeyMoments: true,
+  allowedCategories: ["Standard brand-safe", "Gaming & tech"]
+};
+
+export const AD_REVENUE_LOG: AdRevenueRecord[] = [
+  { id: "ad_1", triggeredAt: hoursAgo(1.2), durationSeconds: 90, estimatedRevenue: 4.85, trigger: "manual" },
+  { id: "ad_2", triggeredAt: hoursAgo(26), durationSeconds: 60, estimatedRevenue: 3.1, trigger: "manual" },
+  { id: "ad_3", triggeredAt: hoursAgo(50), durationSeconds: 90, estimatedRevenue: 5.2, trigger: "manual" }
+];

@@ -81,24 +81,59 @@ export default function CommunityPage() {
       </div>
 
       {tab === "audience" && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div className="rounded-lg border border-surface-border bg-surface-panel p-5">
-            <p className="text-2xl font-semibold text-ink">{formatCount(creator.followerCount)}</p>
-            <p className="text-xs text-ink-faint">Followers</p>
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="rounded-lg border border-surface-border bg-surface-panel p-5">
+              <p className="text-2xl font-semibold text-ink">{formatCount(creator.followerCount)}</p>
+              <p className="text-xs text-ink-faint">Followers</p>
+            </div>
+            <div className="rounded-lg border border-surface-border bg-surface-panel p-5">
+              <p className="text-2xl font-semibold text-ink">{formatCount(creator.subscriberCount)}</p>
+              <p className="text-xs text-ink-faint">Subscribers</p>
+            </div>
           </div>
-          <div className="rounded-lg border border-surface-border bg-surface-panel p-5">
-            <p className="text-2xl font-semibold text-ink">{formatCount(creator.subscriberCount)}</p>
-            <p className="text-xs text-ink-faint">Subscribers</p>
-          </div>
-          <div className="rounded-lg border border-surface-border bg-surface-panel p-5">
-            <button
-              onClick={() => push({ kind: "info", title: "Export requested", description: backendRequiredMessage("storage") })}
-              className="focus-ring w-full rounded-md border border-surface-border py-2 text-sm font-medium text-ink-muted hover:text-ink"
-            >
-              Export follower/subscriber data
-            </button>
-            <p className="mt-1.5 text-[11px] text-ink-faint">Exports include only what's legally permitted to share with the account owner.</p>
-          </div>
+
+          <section className="rounded-lg border border-surface-border bg-surface-panel p-5">
+            <h2 className="mb-1 text-sm font-semibold text-ink">Your data, portable</h2>
+            <p className="mb-3 text-xs text-ink-muted">
+              Export what legally belongs to you. Private viewer information is never exported without that viewer&apos;s consent — follower
+              exports include only what you&apos;re permitted to have (usernames, follow date), never emails or personal details.
+            </p>
+            <div className="grid grid-cols-1 gap-1.5 sm:grid-cols-2">
+              {[
+                "Channel analytics",
+                "Stream history",
+                "VOD metadata",
+                "Schedule",
+                "Subscriber statistics",
+                "Revenue reports",
+                "Moderation logs",
+                "Permitted follower information"
+              ].map((label) => (
+                <button
+                  key={label}
+                  onClick={() => push({ kind: "info", title: `${label} export requested`, description: backendRequiredMessage("storage") })}
+                  className="focus-ring flex items-center justify-between rounded-md border border-surface-border px-3.5 py-2.5 text-left text-sm text-ink-muted hover:border-surface-borderStrong hover:text-ink"
+                >
+                  {label} <span className="text-xs text-brand-cyan">Export</span>
+                </button>
+              ))}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button
+                onClick={() => push({ kind: "info", title: "Broadcast download requested", description: backendRequiredMessage("storage") })}
+                className="focus-ring rounded-md border border-surface-border px-3.5 py-2 text-xs font-medium text-ink-muted hover:text-ink"
+              >
+                Download original broadcasts
+              </button>
+              <button
+                onClick={() => push({ kind: "info", title: "Clip download requested", description: backendRequiredMessage("storage") })}
+                className="focus-ring rounded-md border border-surface-border px-3.5 py-2 text-xs font-medium text-ink-muted hover:text-ink"
+              >
+                Download clips
+              </button>
+            </div>
+          </section>
         </div>
       )}
 

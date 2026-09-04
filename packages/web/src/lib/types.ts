@@ -257,3 +257,104 @@ export interface DiscoveryHighlight {
   creatorId: string;
   reason: string;
 }
+
+// --- Creator-first expansion: discovery, safety, money, support, governance ---
+
+export type DiscoveryReasonIcon = "sparkles" | "trending-up" | "users" | "radio" | "heart" | "moon" | "compass" | "repeat";
+
+export interface DiscoveryEntry {
+  creatorId: string;
+  reason: string;
+  icon: DiscoveryReasonIcon;
+}
+
+export interface ReportRecord {
+  id: string;
+  reporterUsername: string;
+  reporterReputation: "new_account" | "mixed_history" | "trusted";
+  targetType: "chat_message" | "clip" | "stream";
+  reason: string;
+  submittedAt: string;
+  flaggedCoordinated: boolean;
+}
+
+export interface LockdownAction {
+  id: string;
+  label: string;
+  description: string;
+  enabledByDefault: boolean;
+}
+
+export interface RevenueLineItem {
+  label: string;
+  amount: number;
+}
+
+export interface StreamRevenueRecord {
+  streamTitle: string;
+  date: string;
+  subscriptions: number;
+  tips: number;
+  giftedSubs: number;
+  ads: number;
+  total: number;
+}
+
+export interface CreatorGoal {
+  id: string;
+  label: string;
+  targetAmount: number;
+  currentAmount: number;
+  unit: "subscribers" | "dollars" | "followers";
+  endsAt: string;
+}
+
+export interface SupportTicket {
+  id: string;
+  subject: string;
+  category: "technical" | "monetization" | "moderation" | "safety" | "feature_request";
+  status: "open" | "awaiting_creator" | "awaiting_support" | "resolved";
+  priority: "standard" | "live_broadcast";
+  createdAt: string;
+  updatedAt: string;
+  etaHours: number;
+  messages: { author: "creator" | "support"; body: string; at: string }[];
+}
+
+export interface CopyrightClaim {
+  id: string;
+  vodTitle: string;
+  claimedTimestamp: string;
+  claimantName: string | null;
+  status: "muted_segment" | "restricted" | "disputed" | "resolved_released" | "resolved_upheld";
+  filedAt: string;
+  description: string;
+}
+
+export interface CouncilProposal {
+  id: string;
+  title: string;
+  summary: string;
+  status: "voting" | "advisory_review" | "decided_binding" | "decided_advisory";
+  votesFor: number;
+  votesAgainst: number;
+  closesAt: string;
+  decisionType: "advisory" | "binding";
+}
+
+export interface AdSettings {
+  adsEnabled: boolean;
+  manualTriggerOnly: boolean;
+  maxAdsPerHour: number;
+  subscribersSeeAds: boolean;
+  blockDuringKeyMoments: boolean;
+  allowedCategories: string[];
+}
+
+export interface AdRevenueRecord {
+  id: string;
+  triggeredAt: string;
+  durationSeconds: number;
+  estimatedRevenue: number;
+  trigger: "manual" | "auto";
+}

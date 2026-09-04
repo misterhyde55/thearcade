@@ -1,17 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Gamepad2, Sparkles } from "lucide-react";
+import { ArrowRight, Gamepad2 } from "lucide-react";
 import { FeaturedStream } from "@/components/stream/FeaturedStream";
 import { StreamCard } from "@/components/stream/StreamCard";
-import { CreatorDiscoveryCard } from "@/components/stream/CreatorDiscoveryCard";
+import { DiscoverySection } from "@/components/stream/DiscoverySection";
 import { ContinueWatchingRow } from "@/components/stream/ContinueWatchingRow";
 import { SectionKicker } from "@/components/ui/SectionKicker";
 import { useDemoSession } from "@/lib/demo-session";
-import { CATEGORIES, DISCOVERY_HIGHLIGHTS, getLiveStreams } from "@/lib/mock-data";
+import {
+  CATEGORIES,
+  getArcadeAfterDark,
+  getBecauseYouWatched,
+  getFreshlyLive,
+  getGrowingCommunities,
+  getHiddenGems,
+  getLiveStreams,
+  getNewPlayers,
+  getTrySomethingNew,
+  getYourFavoritesLive
+} from "@/lib/mock-data";
 
 export default function HomePage() {
-  const { isSignedIn } = useDemoSession();
+  const { isSignedIn, followedUsernames } = useDemoSession();
   const liveStreams = getLiveStreams();
   const [featured, ...rest] = liveStreams;
 
@@ -27,6 +38,13 @@ export default function HomePage() {
       )}
 
       {isSignedIn && <ContinueWatchingRow />}
+
+      <DiscoverySection
+        kicker="YOUR ROSTER"
+        title="Your Favorites"
+        subtitle="Creators you follow who are live right now."
+        entries={getYourFavoritesLive(followedUsernames)}
+      />
 
       <section className="mb-10">
         <div className="mb-4 flex items-end justify-between">
@@ -44,6 +62,13 @@ export default function HomePage() {
           ))}
         </div>
       </section>
+
+      <DiscoverySection
+        kicker="JUST STARTED"
+        title="Freshly Live"
+        subtitle="Broadcasts that just kicked off — get in before the crowd does."
+        entries={getFreshlyLive()}
+      />
 
       <section className="mb-10">
         <div className="mb-4">
@@ -66,21 +91,47 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="mb-10">
-        <SectionKicker>DISCOVERY</SectionKicker>
-        <div className="mb-1 flex items-center gap-2">
-          <Sparkles size={17} className="text-brand-purple" />
-          <h2 className="text-lg font-semibold text-ink">Featured Cabinets</h2>
-        </div>
-        <p className="mb-4 text-sm text-ink-muted">
-          Surfaced by growth rate, retention, and engagement — not just current player count.
-        </p>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {DISCOVERY_HIGHLIGHTS.map((h) => (
-            <CreatorDiscoveryCard key={h.creatorId} creatorId={h.creatorId} reason={h.reason} />
-          ))}
-        </div>
-      </section>
+      <DiscoverySection
+        kicker="DISCOVERY"
+        title="Hidden Gems"
+        subtitle="Small channels with an outsized retention rate — viewers who show up, stay."
+        entries={getHiddenGems()}
+      />
+
+      <DiscoverySection
+        kicker="DISCOVERY"
+        title="Growing Communities"
+        subtitle="The fastest-growing channels over the last 30 days, regardless of current size."
+        entries={getGrowingCommunities()}
+      />
+
+      <DiscoverySection
+        kicker="JUST JOINED"
+        title="New Players"
+        subtitle="Creators who recently started broadcasting on The Arcade."
+        entries={getNewPlayers()}
+      />
+
+      <DiscoverySection
+        kicker="FOR YOU"
+        title="Because You Watched"
+        subtitle="More from categories you already follow creators in."
+        entries={getBecauseYouWatched(followedUsernames)}
+      />
+
+      <DiscoverySection
+        kicker="BROADEN YOUR ROTATION"
+        title="Try Something New"
+        subtitle="Categories outside what you usually watch — one click to explore."
+        entries={getTrySomethingNew(followedUsernames)}
+      />
+
+      <DiscoverySection
+        kicker="LATE-NIGHT ROTATION"
+        title="Arcade After Dark"
+        subtitle="A curated, lower-key lineup for late-night sessions."
+        entries={getArcadeAfterDark()}
+      />
     </div>
   );
 }

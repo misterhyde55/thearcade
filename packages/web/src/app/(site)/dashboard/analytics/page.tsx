@@ -1,22 +1,46 @@
 "use client";
 
+import { Lightbulb, Play } from "lucide-react";
+import { SectionKicker } from "@/components/ui/SectionKicker";
 import { useDemoSession } from "@/lib/demo-session";
 import { formatCount, formatCurrency, formatDuration } from "@/lib/format";
-import { ANALYTICS } from "@/lib/mock-data";
+import { ANALYTICS, getClipsByCreatorId } from "@/lib/mock-data";
+
+const INSIGHTS = [
+  "More viewers stayed after you switched from Gaming to Anime & Manga last Tuesday.",
+  "Your returning-viewer rate is up this week compared to your usual average.",
+  "Most new viewers this week found you through Hidden Gems on the homepage.",
+  "Viewership dipped in the first 10 minutes of your last stream — a common pattern before the main segment starts, not a red flag."
+];
 
 export default function AnalyticsPage() {
   const { creator } = useDemoSession();
   if (!creator) return null;
 
+  const clips = getClipsByCreatorId(creator.id);
   const maxHistory = Math.max(...ANALYTICS.viewerHistory30d.map((p) => p.value));
   const maxRetention = 100;
 
   return (
     <div className="space-y-6">
       <div>
+        <SectionKicker>WHAT HAPPENED, WHAT&apos;S NEXT</SectionKicker>
         <h1 className="text-xl font-semibold text-ink">Analytics</h1>
         <p className="mt-1 text-sm text-ink-muted">Last 30 days, in plain terms — not a raw data dump.</p>
       </div>
+
+      <section className="rounded-lg border border-surface-border bg-surface-panel p-5">
+        <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink">
+          <Lightbulb size={15} className="text-brand-cyan" /> What this means for you
+        </h2>
+        <ul className="space-y-2">
+          {INSIGHTS.map((line) => (
+            <li key={line} className="rounded-md border border-brand-cyan/20 bg-brand-cyan/[0.04] px-3 py-2 text-sm text-ink-muted">
+              {line}
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Avg. concurrent viewers" value={formatCount(ANALYTICS.avgConcurrentViewers)} />
@@ -92,6 +116,24 @@ export default function AnalyticsPage() {
           ))}
         </div>
       </section>
+
+      {clips.length > 0 && (
+        <section className="rounded-lg border border-surface-border bg-surface-panel p-5">
+          <h2 className="mb-3 flex items-center gap-1.5 text-sm font-semibold text-ink">
+            <Play size={15} /> Clip performance
+          </h2>
+          <div className="space-y-1.5">
+            {clips.map((c) => (
+              <div key={c.id} className="flex items-center justify-between rounded-md border border-surface-border px-3 py-2 text-sm">
+                <span className="min-w-0 truncate text-ink-muted">
+                  {c.title} <span className="text-ink-faint">by {c.clippedByUsername}</span>
+                </span>
+                <span className="shrink-0 font-medium text-ink">{formatCount(c.viewCount)} views</span>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="rounded-lg border border-surface-border bg-surface-panel p-5">
         <h2 className="mb-3 text-sm font-semibold text-ink">Stream-by-stream comparison</h2>

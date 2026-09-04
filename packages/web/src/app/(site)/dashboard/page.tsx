@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, CheckCircle2, Circle, Gauge, Radio, TrendingUp, Users } from "lucide-react";
+import { Activity, AlertTriangle, CheckCircle2, Circle, Gauge, LifeBuoy, Radio, ShieldAlert, TrendingUp, Users } from "lucide-react";
 import { useDemoSession } from "@/lib/demo-session";
 import { formatCount, formatCurrency, formatRelativeTime } from "@/lib/format";
-import { ANALYTICS, MODERATORS, NOTIFICATIONS, getStreamByCreatorId } from "@/lib/mock-data";
+import { ANALYTICS, MODERATION_CASES, MODERATORS, NOTIFICATIONS, REPORTS_AGAINST_CREATOR, getStreamByCreatorId } from "@/lib/mock-data";
 
 const CHECKLIST = [
   { label: "Stream title and category set", done: true },
@@ -18,6 +18,15 @@ export default function DashboardOverviewPage() {
   const { creator } = useDemoSession();
   if (!creator) return null;
   const stream = getStreamByCreatorId(creator.id);
+
+  const openCases = MODERATION_CASES.filter((c) => c.status === "active" || c.status === "under_appeal");
+  const coordinatedReports = REPORTS_AGAINST_CREATOR.filter((r) => r.flaggedCoordinated);
+  const alerts = [
+    ...openCases.map((c) => ({ id: c.id, text: `Fair Play case ${c.id}: ${c.ruleLabel}`, href: "/dashboard/moderation" })),
+    ...(coordinatedReports.length > 0
+      ? [{ id: "reports", text: `${coordinatedReports.length} reports flagged as possible coordinated activity`, href: "/dashboard/moderation" }]
+      : [])
+  ];
 
   return (
     <div className="space-y-6">
@@ -46,6 +55,35 @@ export default function DashboardOverviewPage() {
         <StatCard icon={Users} label="Subscribers" value={formatCount(creator.subscriberCount)} />
         <StatCard icon={Gauge} label="Est. revenue (30d)" value={formatCurrency(ANALYTICS.estimatedRevenue30d)} />
       </div>
+
+      <section className="rounded-lg border-2 border-brand-red/30 bg-brand-red/[0.05] p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 className="flex items-center gap-1.5 text-sm font-semibold text-ink">
+            <AlertTriangle size={15} className="text-brand-red" /> Alerts requiring attention {alerts.length > 0 && `(${alerts.length})`}
+          </h2>
+          <div className="flex flex-wrap gap-2">
+            <Link href="/dashboard/stream-manager" className="focus-ring flex items-center gap-1.5 rounded-md border border-brand-red/40 bg-brand-red/10 px-3 py-1.5 text-xs font-semibold text-brand-red hover:bg-brand-red/20">
+              <ShieldAlert size={13} /> Lockdown Mode
+            </Link>
+            <Link href="/dashboard/support" className="focus-ring flex items-center gap-1.5 rounded-md border border-surface-border px-3 py-1.5 text-xs font-medium text-ink-muted hover:text-ink">
+              <LifeBuoy size={13} /> Contact support
+            </Link>
+          </div>
+        </div>
+        {alerts.length === 0 ? (
+          <p className="mt-2 text-sm text-ink-muted">Nothing needs attention right now — your channel is in good standing.</p>
+        ) : (
+          <ul className="mt-3 space-y-1.5">
+            {alerts.map((a) => (
+              <li key={a.id}>
+                <Link href={a.href} className="focus-ring block rounded-md px-2 py-1.5 text-sm text-ink hover:bg-surface-panel2">
+                  {a.text} →
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <section className="rounded-lg border border-surface-border bg-surface-panel p-5">

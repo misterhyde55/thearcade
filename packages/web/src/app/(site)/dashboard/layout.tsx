@@ -4,12 +4,15 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   BarChart3,
+  Copyright,
   Gauge,
   Gem,
   LayoutDashboard,
+  LifeBuoy,
   Radio,
   ShieldCheck,
   Users,
+  Vote,
   Video
 } from "lucide-react";
 import { useDemoSession } from "@/lib/demo-session";
@@ -25,7 +28,10 @@ const NAV = [
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/dashboard/community", label: "Community", icon: Users },
   { href: "/dashboard/monetization", label: "Monetization", icon: Gem },
-  { href: "/dashboard/moderation", label: "Moderation & Safety", icon: ShieldCheck }
+  { href: "/dashboard/moderation", label: "Fair Play Center", icon: ShieldCheck },
+  { href: "/dashboard/copyright", label: "Copyright Tools", icon: Copyright },
+  { href: "/dashboard/support", label: "Support Center", icon: LifeBuoy },
+  { href: "/dashboard/council", label: "Creator Council", icon: Vote }
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

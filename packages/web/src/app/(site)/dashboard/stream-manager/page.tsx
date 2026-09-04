@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Bookmark, Megaphone, ShieldAlert, Swords, X } from "lucide-react";
+import { Activity, Bookmark, Megaphone, ShieldAlert, ShieldOff, Swords, X } from "lucide-react";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { Avatar } from "@/components/ui/Avatar";
 import { CabinetFrame } from "@/components/player/CabinetFrame";
+import { LockdownModal } from "@/components/safety/LockdownModal";
 import { useToast } from "@/components/ui/Toast";
 import { useDemoSession } from "@/lib/demo-session";
 import { formatUptime } from "@/lib/format";
@@ -30,6 +31,8 @@ export default function StreamManagerPage() {
   const [adConfirmOpen, setAdConfirmOpen] = useState(false);
   const [endConfirmOpen, setEndConfirmOpen] = useState(false);
   const [markers, setMarkers] = useState<{ id: string; label: string; at: string }[]>([]);
+  const [lockdownOpen, setLockdownOpen] = useState(false);
+  const [lockdownActions, setLockdownActions] = useState<string[] | null>(null);
 
   const openCases = MODERATION_CASES.filter((c) => c.status === "under_appeal" || c.status === "active");
 
@@ -46,6 +49,23 @@ export default function StreamManagerPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-xl font-semibold text-ink">Stream Manager</h1>
+
+      {lockdownActions && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border-2 border-brand-red/40 bg-brand-red/[0.07] px-4 py-3">
+          <p className="flex items-center gap-2 text-sm font-semibold text-brand-red">
+            <ShieldAlert size={16} /> Lockdown Mode active — {lockdownActions.length} protection{lockdownActions.length === 1 ? "" : "s"} engaged
+          </p>
+          <button
+            onClick={() => {
+              setLockdownActions(null);
+              push({ kind: "info", title: "Lockdown Mode lifted", description: "Chat and channel settings returned to normal." });
+            }}
+            className="focus-ring flex items-center gap-1.5 rounded-md border border-brand-red/40 px-3 py-1.5 text-xs font-semibold text-brand-red hover:bg-brand-red/10"
+          >
+            <ShieldOff size={13} /> Stand down
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-[280px_1fr]">
         <div className="rounded-lg border border-surface-border bg-surface-panel p-4">
@@ -66,6 +86,24 @@ export default function StreamManagerPage() {
           <p className="mt-2 text-xs text-ink-faint">
             {stream?.status === "live" ? `Live · uptime ${formatUptime(stream.startedAt)}` : "Not currently broadcasting"}
           </p>
+          {stream?.status === "live" && (
+            <div className="mt-2 grid grid-cols-3 gap-1.5 rounded-md border border-surface-border bg-surface-raised p-2 text-center">
+              <div>
+                <p className="flex items-center justify-center gap-1 text-xs font-semibold text-brand-cyan">
+                  <Activity size={11} /> 6.1
+                </p>
+                <p className="text-[10px] text-ink-faint">Mbps</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-brand-cyan">0.1%</p>
+                <p className="text-[10px] text-ink-faint">Dropped</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-brand-cyan">1.8s</p>
+                <p className="text-[10px] text-ink-faint">Latency</p>
+              </div>
+            </div>
+          )}
           <button
             onClick={() => setEndConfirmOpen(true)}
             disabled={stream?.status !== "live"}
@@ -146,15 +184,10 @@ export default function StreamManagerPage() {
             One-click followers-only
           </button>
           <button
-            onClick={() => {
-              setFollowersOnly(true);
-              setSubscribersOnly(false);
-              setSlowMode(0);
-              push({ kind: "warning", title: "Panic mode engaged", description: "Chat locked to followers-only. Notify a moderator to investigate." });
-            }}
+            onClick={() => setLockdownOpen(true)}
             className="mt-2 flex w-full items-center justify-center gap-1.5 rounded-md border border-brand-red/40 bg-brand-red/10 py-1.5 text-xs font-semibold text-brand-red hover:bg-brand-red/20"
           >
-            <ShieldAlert size={13} /> Panic button
+            <ShieldAlert size={13} /> Open Lockdown Mode
           </button>
         </section>
 
@@ -209,7 +242,7 @@ export default function StreamManagerPage() {
             </ul>
           )}
           <a href="/dashboard/moderation" className="focus-ring mt-3 inline-block text-xs text-brand-cyan hover:underline">
-            Open Moderation & Safety →
+            Open Fair Play Center →
           </a>
         </section>
       </div>
@@ -248,6 +281,15 @@ export default function StreamManagerPage() {
           setEndConfirmOpen(false);
         }}
         onCancel={() => setEndConfirmOpen(false)}
+      />
+      <LockdownModal
+        open={lockdownOpen}
+        onClose={() => setLockdownOpen(false)}
+        onActivated={(actions) => {
+          setLockdownActions(actions);
+          if (actions.includes("followers_only")) setFollowersOnly(true);
+          if (actions.includes("slow_mode")) setSlowMode(30);
+        }}
       />
     </div>
   );
